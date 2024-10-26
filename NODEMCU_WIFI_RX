@@ -1,0 +1,69 @@
+#include <ESP8266WiFi.h>
+const char *ssid = "iotdata"; // Enter your WiFi Name
+const char *pass = "12345678"; // Enter your WiFi Password
+
+WiFiServer server(80);
+String inputString = "";      // a String to hold incoming data
+bool stringComplete =false;  // whether the string is complete
+
+void setup() {
+  // initialize serial:
+  WiFi.begin(ssid, pass);
+  Serial.begin(9600);
+  // reserve 200 bytes for the inputString:
+  inputString.reserve(200);
+  server.begin();
+}
+
+void loop() {
+  // print the string when a newline arrives:
+  if (stringComplete) {
+    Serial.println(inputString);
+    // clear the string:
+    inputString = "";
+    stringComplete = false;
+  }
+}
+
+/*
+  SerialEvent occurs whenever a new data comes in the hardware serial RX. This
+  routine is run between each time loop() runs, so using delay inside loop can
+  delay response. Multiple bytes of data may be available.
+*/
+
+void serialEvent() {
+
+WiFiClient client = server.available();
+if ( client.connected()) { // loop while the client's connected
+// HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
+client.println("HTTP/1.1 200 OK");
+client.println("Content-type:text/html");
+client.println("Connection: close");
+client.println("Refresh: 3"); // update the page after 4 sec
+client.println();
+  while (Serial.available()) {
+    // get the new byte:
+    char inChar = (char)Serial.read();
+    // add it to the inputString:
+    inputString += inChar;
+    // if the incoming character is a newline, set a flag so the main loop can
+    // do something about it:
+    if (inChar == '\n') {
+      stringComplete = true;
+// Display the HTML web page
+client.println("<!DOCTYPE html><html>");
+client.println("<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
+client.println("<link rel=\"icon\" href=\"data:,\">");
+
+// Web Page Heading
+
+
+client.println("<body><p style=\"color:blue;\"> " + String(inputString) +" %"+ " </p>");
+client.println("</body></html>");
+delay(1000);
+
+      
+    }
+  }
+}
+}
