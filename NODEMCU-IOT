@@ -1,0 +1,44 @@
+#include <ESP8266WiFi.h>
+
+const char* ssid="iotdata";
+const char* password = "12345678";
+
+
+
+void setup() {
+  
+  pinMode(LED_BUILTIN,OUTPUT);
+  digitalWrite(LED_BUILTIN,HIGH);
+
+  Serial.begin(115200);
+  Serial.println();
+  Serial.print("Wifi connecting to ");
+  Serial.println( ssid );
+
+  WiFi.begin(ssid,password);
+
+  Serial.println();
+  Serial.print("Connecting");
+
+  while( WiFi.status() != WL_CONNECTED ){
+      delay(500);
+      Serial.print(".");        
+  }
+
+  digitalWrite( LED_BUILTIN, LOW);
+  Serial.println();
+
+  Serial.println("Wifi Connected Success!");
+  Serial.print("NodeMCU IP Address : ");
+  Serial.println(WiFi.localIP() );
+
+}
+
+void loop() {
+/*  digitalWrite( LED_BUILTIN,HIGH);
+  delay(1000);
+  digitalWrite( LED_BUILTIN,LOW); 
+  delay(1000);
+  // put your main code here, to run repeatedly:
+
+*/}
