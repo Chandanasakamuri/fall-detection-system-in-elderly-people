@@ -1,0 +1,57 @@
+#include <Wire.h>      
+#include <I2Cdev.h>     
+#include <MPU6050.h> 
+float X;
+float Y;
+float Z;
+MPU6050 mpu;
+int16_t ax, ay, az;
+int16_t gx, gy, gz;
+
+struct MyData {
+  byte X;
+  byte Y;
+  byte Z;
+};
+
+MyData data;
+int a;
+int b;
+int c; 
+
+void setup() {
+
+   Serial.begin(9600);
+  Wire.begin();
+  mpu.initialize();
+  pinMode(2,OUTPUT);
+}
+
+void loop() {
+  mpu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+  X = map(ax, -17000, 17000, 0, 255 ); 
+  Y = map(ay, -17000, 17000, 0, 255); 
+  Z = map(az, -17000, 17000, 0, 255); 
+  delay(500);
+  Serial.print(" X = ");
+  Serial.println(X);
+  Serial.print(" Y = ");
+  Serial.println(Y);
+  Serial.print(" Z = ");
+  Serial.println(Z);
+  delay (2000);
+  if (Y<=90)
+  {
+    Serial.print("MAN HAS FALLEN");
+   digitalWrite (2,HIGH);
+   delay(3000);
+    digitalWrite (2,LOW); 
+  }
+   if (Y>=200)
+   {
+    Serial.print("MAN HAS FALLEN");
+   digitalWrite (2,HIGH);
+   delay(3000);
+    digitalWrite (2,LOW); 
+  }
+}
